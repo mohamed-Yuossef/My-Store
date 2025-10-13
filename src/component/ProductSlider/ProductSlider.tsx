@@ -1,19 +1,32 @@
-// ProductSlider.jsx
-
+import React from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { EffectCoverflow, Pagination } from "swiper/modules";
 
-// 👇 مهم جدًا تحط دول هنا
 import "swiper/css";
-import "swiper/css/effect-coverflow";
 import "swiper/css/pagination";
 
-export default function ProductSlider({ product }) {
+interface Product {
+  id?: string;
+  _id?: string;
+  title?: string;
+  images?: string[];
+  imageCover?: string;
+  [key: string]: unknown;
+}
+
+interface Props {
+  product: Product;
+}
+
+export default function ProductSlider({ product }: Props): React.ReactElement {
+  const images =
+    product.images ?? (product.imageCover ? [product.imageCover] : []);
+
   return (
     <Swiper
       effect={"coverflow"}
-      grabCursor={true}
-      centeredSlides={true}
+      grabCursor
+      centeredSlides
       slidesPerView={"auto"}
       coverflowEffect={{
         rotate: 30,
@@ -26,11 +39,14 @@ export default function ProductSlider({ product }) {
       modules={[EffectCoverflow, Pagination]}
       className="w-full h-60 relative"
     >
-      {product.images?.map((image, idx) => (
-        <SwiperSlide key={idx} className="w-48 h-60 flex items-center justify-center">
+      {images.map((image, idx) => (
+        <SwiperSlide
+          key={product.id ?? product._id ?? idx}
+          className="w-48 h-60 flex items-center justify-center"
+        >
           <img
             src={image}
-            alt={product.title}
+            alt={product.title ?? "product"}
             className="w-full h-full object-contain rounded-lg transition-transform duration-500 ease-in-out group-hover:scale-105"
           />
         </SwiperSlide>

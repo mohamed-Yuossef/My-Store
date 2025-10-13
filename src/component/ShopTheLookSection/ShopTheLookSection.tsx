@@ -1,10 +1,19 @@
-// components/ShopTheLookSection.tsx
 import React from "react";
 import inst1 from "../../assets/insta-01.jpg";
 import inst2 from "../../assets/insta-03.jpg";
 import inst3 from "../../assets/insta-04.jpg";
 import { Link } from "react-router-dom";
-const Product = [
+// ...existing code...
+
+type Item = {
+  id: number;
+  image: string;
+  title?: string;
+  text?: string;
+  link?: string;
+};
+
+const products: Item[] = [
   {
     id: 1,
     image: inst1,
@@ -24,20 +33,13 @@ const Product = [
     link: "/shop/look-3",
   },
 ];
-type Item = {
-  id: number;
-  image: string;
-  title?: string;
-  text?: string;
-  link?: string;
-};
 
-export default function ShopTheLookSection() {
+export default function ShopTheLookSection(): React.ReactElement {
   return (
     <section className="w-full py-10">
       <div className="mx-auto max-w-7xl px-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {Product.map((item) => (
+          {products.map((item: Item) => (
             <figure
               key={item.id}
               className="group relative overflow-hidden rounded-xl bg-gray-100"

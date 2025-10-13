@@ -25,15 +25,15 @@ interface AllCartItem {
 }
 
 type CartContextType = {
-  AllCart: () => Promise<any>;
-  ClearCart: () => Promise<any>;
-  UpDateProduct: (id: string, count: number) => Promise<any>;
-  RemoveCart: (id: string) => Promise<any>;
+  AllCart: () => Promise<unknown>;
+  ClearCart: () => Promise<unknown>;
+  UpDateProduct: (id: string, count: number) => Promise<unknown>;
+  RemoveCart: (id: string) => Promise<unknown>;
   numberItem?: number;
   setNumberItem?: React.Dispatch<React.SetStateAction<number>>;
 };
 
-export default function Cart(): JSX.Element {
+export default function Cart(): React.ReactElement {
   const {
     AllCart,
     UpDateProduct,

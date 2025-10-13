@@ -13,13 +13,14 @@ interface WishlistItem {
   imageCover: string;
   title: string;
   price: number;
+   category?: string | { name?: string };
 }
 
 export default function Wishlist() {
   const { AddToCart } = useContext(CartContext) as {
     AddToCart: (id: string) => Promise<any>;
   };
-  const { AllWishListItem, RemoveWishlist, wishlistCount, setWishlistCount } =
+  const { AllWishListItem, RemoveWishlist, setWishlistCount } =
     useContext(WishListContext) as {
       AllWishListItem: () => Promise<any>;
       RemoveWishlist: (id: string) => Promise<any>;
@@ -29,7 +30,7 @@ export default function Wishlist() {
   const [wishlist, setWishlist] = useState<WishlistItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [addLoading, setAddLoading] = useState<string | null>(null);
-  const [wishlistIds, setWishlistIds] = useState<string[]>([]);
+  const [, setWishlistIds] = useState<string[]>([]);
 
   async function fetchWishlist() {
     setLoading(true);

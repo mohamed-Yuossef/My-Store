@@ -2,11 +2,9 @@ import { useEffect, useState } from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import LayOut from "./component/LayOut/LayOut";
 import Home from "./component/Home/Home";
-import Shop from "./component/Shop/Shop";
 import Products from "./component/Products/Products";
 import ProductDetails from "./component/ProductDetails/ProductDetails";
 import Login from "./component/Login/Login";
-
 import WishList from "./component/WishList/WishList";
 import Cart from "./component/Cart/Cart";
 import { UserProvider } from "./Context/UserContext";
@@ -19,7 +17,7 @@ import Checkout from "./component/Checkout/Checkout";
 import Allorders from "./component/Allorders/Allorders";
 
 export default function App() {
-  const [loading, setLoading] = useState(true);
+  const [ setLoading] = useState(true);
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 2000);
 
@@ -58,16 +56,7 @@ export default function App() {
           ),
         },
         { path: "login", element: <Login /> },
-        
-        {
-          path: "shop",
-          element: (
-            <ProtectedRoute>
-              {" "}
-              <Shop />{" "}
-            </ProtectedRoute>
-          ),
-        },
+
         {
           path: "checkout",
           element: (
@@ -86,7 +75,7 @@ export default function App() {
             </ProtectedRoute>
           ),
         },
-      
+
         {
           path: "wishlist",
           element: (

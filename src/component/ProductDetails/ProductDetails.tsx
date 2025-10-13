@@ -14,6 +14,7 @@ import { EffectCoverflow, Pagination, Autoplay } from "swiper/modules";
 interface Product {
   id: string;
   imageCover: string;
+  images?: string[];
   title: string;
   description: string;
   category?: { name: string };
@@ -27,8 +28,8 @@ const ProductDetails = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [addLoading, setAddLoading] = useState<string | null>(null);
   const [relatedProduct, setRelatedProduct] = useState<Product[]>([]);
-  const { AddToCart,  setNumberItem } = useContext(CartContext) as {
-    AddToCart: (id: string) => Promise<any>;
+  const { AddToCart, setNumberItem } = useContext(CartContext) as {
+    AddToCart: (id: string) => Promise<unknown>;
     numberItem: number;
     setNumberItem: React.Dispatch<React.SetStateAction<number>>;
   };
@@ -62,7 +63,7 @@ const ProductDetails = () => {
 
   async function AddCart(id: string) {
     setAddLoading(id);
-    let res = await AddToCart(id);
+    const res: any = await AddToCart(id);
     setAddLoading(null);
     if (res.data.status === "success") {
       toast.success(res.data.message);
@@ -103,41 +104,45 @@ const ProductDetails = () => {
         >
           <div className="flex flex-col md:flex-row gap-10 bg-white shadow-lg p-6 rounded-lg">
             <div className="flex-1 flex items-center justify-center">
-               <Link to={`/productDetails/${product.id}/${product.category}`}>
-                  <Swiper
-                    effect={"coverflow"}
-                    grabCursor={true}
-                    centeredSlides={true}
-                    slidesPerView={"auto"}
-                    coverflowEffect={{
-                      rotate: 40, // زاوية دوران أخف (شكلها أشيك)
-                      stretch: 0, // المسافة بين الصور
-                      depth: 120, // عمق 3D
-                      modifier: 1, // قوة التأثير
-                      slideShadows: true, // يضيف ظل للصورة
-                    }}
-                    autoplay={{
-                      delay: 4000, // الوقت بين كل سلايد والتاني (ms)
-                      disableOnInteraction: false, // يكمل التحريك بعد ما المستخدم يتفاعل
-                    }}
-                    pagination={{ clickable: true }}
-                    modules={[EffectCoverflow, Pagination ,Autoplay]}
-                    className="w-full h-60 relative"
-                  >
-                    {product.images?.map((image, idx) => (
-                      <SwiperSlide
-                        key={idx}
-                        className="w-full h-full flex items-center justify-center"
-                      >
-                        <img
-                          src={image}
-                          alt={product.title}
-                          className="w-full h-full object-contain rounded-lg transition-transform duration-500 ease-in-out group-hover:scale-105"
-                        />
-                      </SwiperSlide>
-                    ))}
-                  </Swiper>
-                </Link>
+              <Link
+                to={`/productDetails/${product.id}/${
+                  product.category?.name ?? ""
+                }`}
+              >
+                <Swiper
+                  effect={"coverflow"}
+                  grabCursor={true}
+                  centeredSlides={true}
+                  slidesPerView={"auto"}
+                  coverflowEffect={{
+                    rotate: 40,
+                    stretch: 0,
+                    depth: 120,
+                    modifier: 1,
+                    slideShadows: true,
+                  }}
+                  autoplay={{
+                    delay: 4000,
+                    disableOnInteraction: false,
+                  }}
+                  pagination={{ clickable: true }}
+                  modules={[EffectCoverflow, Pagination, Autoplay]}
+                  className="w-full h-60 relative"
+                >
+                  {product.images?.map((image, idx) => (
+                    <SwiperSlide
+                      key={idx}
+                      className="w-full h-full flex items-center justify-center"
+                    >
+                      <img
+                        src={image}
+                        alt={product.title}
+                        className="w-full h-full object-contain rounded-lg transition-transform duration-500 ease-in-out group-hover:scale-105"
+                      />
+                    </SwiperSlide>
+                  ))}
+                </Swiper>
+              </Link>
             </div>
 
             <div className="flex-1 space-y-4">

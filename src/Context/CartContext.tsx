@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { type AxiosResponse } from "axios";
 import React, { createContext, useEffect, useState } from "react";
 
 interface ProductMinimal {
@@ -62,42 +62,47 @@ export default function CartContextProvider({
   children,
 }: {
   children: React.ReactNode;
-}): JSX.Element {
+}): React.ReactElement {
   const [orders, setOrders] = useState<OrderApi[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [numberItem, setNumberItem] = useState<number>(0);
   const [cartId, setCartId] = useState<string | number | null>(null);
 
+  // ✅ Token Getter
   const getToken = (): string => localStorage.getItem("token") || "";
 
+  // ✅ Get All Cart
   async function AllCart(): Promise<AxiosResponse<ApiWrapper<CartApiData>>> {
     const token = getToken();
     const res = await axios.get<ApiWrapper<CartApiData>>(
       "https://ecommerce.routemisr.com/api/v1/cart",
       { headers: { token } }
     );
-    const payload = res.data?.data ?? (res.data as unknown as CartApiData);
-    setCartId((payload as CartApiData)?._id ?? null);
-    setNumberItem(
-      (res.data as any)?.numOfCartItems ??
-        (payload as CartApiData)?.numOfCartItems ??
-        numberItem
-    );
+
+    const payload =
+      (res.data as unknown as { data?: CartApiData }).data ??
+      (res.data as unknown as CartApiData);
+
+    setCartId(payload?._id ?? null);
+    setNumberItem(payload?.numOfCartItems ?? 0);
+
     return res;
   }
 
+  // ✅ Add Product to Cart
   async function AddToCart(
     id: string
   ): Promise<AxiosResponse<ApiWrapper<CartApiData>>> {
     const token = getToken();
     const res = await axios.post<ApiWrapper<CartApiData>>(
-      `https://ecommerce.routemisr.com/api/v1/cart`,
+      "https://ecommerce.routemisr.com/api/v1/cart",
       { productId: id },
       { headers: { token } }
     );
     return res;
   }
 
+  // ✅ Remove Product from Cart
   async function RemoveCart(
     id: string
   ): Promise<AxiosResponse<ApiWrapper<CartApiData>>> {
@@ -109,6 +114,7 @@ export default function CartContextProvider({
     return res;
   }
 
+  // ✅ Update Product Quantity
   async function UpDateProduct(
     id: string,
     count: number
@@ -122,6 +128,7 @@ export default function CartContextProvider({
     return res;
   }
 
+  // ✅ Checkout
   async function CartCheckout(
     cartIdParam: string | number,
     url: string,
@@ -138,33 +145,36 @@ export default function CartContextProvider({
     return res;
   }
 
+  // ✅ Fetch Orders
   async function fetchOrders(): Promise<AxiosResponse<ApiWrapper<OrderApi[]>>> {
     const token = getToken();
     const res = await axios.get<ApiWrapper<OrderApi[]>>(
-      `https://ecommerce.routemisr.com/api/v1/orders/user/`,
+      "https://ecommerce.routemisr.com/api/v1/orders/user/",
       { headers: { token } }
     );
-    setOrders(res.data?.data ?? []);
+
+    const data = (res.data as unknown as { data?: OrderApi[] }).data ?? [];
+    setOrders(data);
+
     return res;
   }
 
+  // ✅ Clear Cart
   async function ClearCart(): Promise<AxiosResponse<ApiWrapper<null>>> {
     const token = getToken();
     const res = await axios.delete<ApiWrapper<null>>(
-      `https://ecommerce.routemisr.com/api/v1/cart`,
-      {
-        headers: { token },
-      }
+      "https://ecommerce.routemisr.com/api/v1/cart",
+      { headers: { token } }
     );
-    console.log(res);
     setNumberItem(0);
     return res;
   }
 
+  // ✅ Initial Load
   useEffect(() => {
     AllCart()
       .catch(() => {
-        /* ignore initial error */
+        console.warn("Failed to load cart on mount");
       })
       .finally(() => setLoading(false));
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -173,15 +183,19 @@ export default function CartContextProvider({
   const value: CartContextType = {
     AddToCart,
     AllCart,
-    numberItem,
-    setNumberItem,
     UpDateProduct,
     RemoveCart,
     CartCheckout,
-    cartId,
-    fetchOrders,
     ClearCart,
+    fetchOrders,
+    numberItem,
+    setNumberItem,
+    cartId,
   };
 
-  return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
+  return (
+    <CartContext.Provider value={value}>
+      {!loading && children}
+    </CartContext.Provider>
+  );
 }

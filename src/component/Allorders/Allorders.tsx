@@ -1,5 +1,5 @@
 // ...existing code...
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import axios from "axios";
 
 interface Product {
@@ -26,7 +26,7 @@ interface Order {
   createdAt?: string;
 }
 
-export default function MyOrders(): JSX.Element {
+export default function MyOrders(): React.ReactElement {
   const [orders, setOrders] = useState<Order[]>([]);
 
   useEffect(() => {
@@ -41,7 +41,7 @@ export default function MyOrders(): JSX.Element {
           }
         );
         // API returns array in res.data or res.data.data based on endpoint
-        const dataFromApi: any[] = res.data?.data ?? res.data ?? [];
+        const dataFromApi: unknown[] = res.data?.data ?? res.data ?? [];
         setOrders(dataFromApi as Order[]);
         console.log(dataFromApi);
       } catch (err) {

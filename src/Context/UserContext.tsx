@@ -16,7 +16,7 @@ interface UserContextType {
 
 export const UserContext = createContext<UserContextType | null>(null);
 
-export function UserProvider({ children }: { children: React.ReactNode }): JSX.Element {
+export function UserProvider({ children }: { children: React.ReactNode }): React.ReactElement {
   const [userLogin, setUserLogin] = useState<boolean>(() => !!localStorage.getItem("token"));
   const [user, setUser] = useState<UserShape | null>(null);
 

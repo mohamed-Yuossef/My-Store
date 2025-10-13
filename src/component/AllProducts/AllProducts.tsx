@@ -19,7 +19,7 @@ import "swiper/css/pagination";
 interface Category {
   name?: string;
   // sometimes category might be a string id/name
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 interface Product {
@@ -33,20 +33,20 @@ interface Product {
 }
 
 type CartContextType = {
-  AddToCart: (id: string) => Promise<any>;
+  AddToCart: (id: string) => Promise<unknown>;
   numberItem?: number;
   setNumberItem?: React.Dispatch<React.SetStateAction<number>>;
 };
 
 type WishListContextType = {
-  AddWishList: (id: string) => Promise<any>;
-  AllWishListItem: () => Promise<any>;
+  AddWishList: (id: string) => Promise<unknown>;
+  AllWishListItem: () => Promise<unknown>;
   wishlistCount?: number;
 };
 
-export default function AllProducts(): JSX.Element {
+export default function AllProducts(): React.ReactElement {
   const [wishlistIds, setWishlistIds] = useState<string[]>([]);
-  const { AddToCart, numberItem, setNumberItem } = useContext(
+  const { AddToCart,  setNumberItem } = useContext(
     CartContext
   ) as CartContextType;
   const { AddWishList, AllWishListItem } = useContext(
@@ -59,7 +59,7 @@ export default function AllProducts(): JSX.Element {
   const productsAll = async function () {
     try {
       setLoading(true);
-      const response = await axios.get<any>(
+      const response = await axios.get<unknown>(
         "https://ecommerce.routemisr.com/api/v1/products"
       );
       // API may return response.data.data or response.data
@@ -73,10 +73,43 @@ export default function AllProducts(): JSX.Element {
     }
   };
 
+// ...existing code...
+  async function AddCart(id?: string) {
+    if (!id) return;
+    setAddLoading(id);
+    try {
+      const res = (await AddToCart(id)) as {
+        data?: { status?: string; message?: string; numOfCartItems?: number };
+      };
+
+      if (res?.data?.status === "success") {
+        toast.success(res.data.message ?? "Added to cart");
+        if (typeof setNumberItem === "function") {
+          setNumberItem(res.data.numOfCartItems ?? 0);
+        }
+      } else {
+        toast.error(res?.data?.message ?? "Failed to add to cart");
+      }
+    } catch (err) {
+      const errorAny = err as unknown;
+      const message =
+        errorAny?.response?.data?.message ?? 
+        errorAny?.message ??
+        "Error adding to cart";
+      console.error(errorAny);
+      toast.error(message);
+    } finally {
+      setAddLoading(null);
+    }
+  }
+
   const fetchWishlistIds = async () => {
     try {
-      const res = await AllWishListItem();
-      const ids: string[] = res?.data?.data?.map((item: any) => item.id) || [];
+      const res = (await AllWishListItem()) as {
+        data?: { data?: Array<{ id?: string }>; [key: string]: unknown };
+      };
+      const ids: string[] =
+        res?.data?.data?.map((item) => item.id ?? "")?.filter(Boolean) ?? [];
       setWishlistIds(ids);
     } catch (error) {
       console.error(error);
@@ -84,39 +117,24 @@ export default function AllProducts(): JSX.Element {
     }
   };
 
-  async function AddCart(id?: string) {
-    if (!id) return;
-    setAddLoading(id);
-    try {
-      const res = await AddToCart(id);
-      if (res?.data?.status === "success") {
-        toast.success(res.data.message);
-        if (typeof setNumberItem === "function") {
-          setNumberItem(res.data.numOfCartItems);
-        }
-      } else {
-        toast.error(res?.data?.message ?? "Failed to add to cart");
-      }
-    } catch (err) {
-      console.error(err);
-      toast.error("Error adding to cart");
-    } finally {
-      setAddLoading(null);
-    }
-  }
-
   async function AddToWishList(id: string) {
     try {
-      const res = await AddWishList(id);
-      toast.success("Added to wishlist");
-      setWishlistIds((prev) => (prev.includes(id) ? prev : [...prev, id]));
-      return res;
+      const res = (await AddWishList(id)) as {
+        data?: { status?: string; message?: string };
+      };
+      if (res?.data?.status === "success") {
+        toast.success(res.data?.message?? "Added to wishlist");
+        fetchWishlistIds();
+      } else {
+        toast.error(res?.data?.message ?? "Error adding to wishlist");
+      }
     } catch (error) {
-      console.error(error);
-      toast.error("Error adding to wishlist");
-      throw error;
+      const errAny = error as unknown;
+      console.error(errAny);
+      toast.error(errAny?.response?.data?.message ?? "Error adding to wishlist");
     }
   }
+// ...existing code...
 
   useEffect(() => {
     productsAll();
@@ -153,7 +171,7 @@ export default function AllProducts(): JSX.Element {
                             to={`/productDetails/${productId}/${
                               typeof product.category === "string"
                                 ? product.category
-                                : (product.category as any)?.name ?? ""
+                                : (product.category as unknown)?.name ?? ""
                             }`}
                           >
                             <img
@@ -259,7 +277,7 @@ export default function AllProducts(): JSX.Element {
                               `/productDetails/${productId}/${
                                 typeof product.category === "string"
                                   ? product.category
-                                  : (product.category as any)?.name ?? ""
+                                  : (product.category as unknown)?.name ?? ""
                               }`
                             )
                           }
