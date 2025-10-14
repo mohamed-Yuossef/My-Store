@@ -15,9 +15,10 @@ import WishListContextProvider from "./Context/WishListContext";
 import ErrorBoundary from "./component/ErrorBoundary/ErrorBoundary";
 import Checkout from "./component/Checkout/Checkout";
 import Allorders from "./component/Allorders/Allorders";
+import Signup from "./component/SignUp/SignUp";
 
 export default function App() {
-  const [ setLoading] = useState(true);
+  const [ ,setLoading] = useState(true);
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 2000);
 
@@ -56,6 +57,7 @@ export default function App() {
           ),
         },
         { path: "login", element: <Login /> },
+        { path: "signUp", element: <Signup /> },
 
         {
           path: "checkout",

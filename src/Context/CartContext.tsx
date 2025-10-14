@@ -1,201 +1,154 @@
-import axios, { type AxiosResponse } from "axios";
-import React, { createContext, useEffect, useState } from "react";
-
-interface ProductMinimal {
-  _id: string;
-  imageCover: string;
-  title: string;
-  price?: number;
-}
-
-interface CartItem {
-  _id?: string;
-  product: ProductMinimal;
-  count: number;
-  price?: number;
-}
+import { createContext, useEffect, useState } from "react";
+import axios from "axios";
 
 interface CartApiData {
-  products?: CartItem[];
-  _id?: string;
-  numOfCartItems?: number;
-  totalCartPrice?: number;
-  [key: string]: unknown;
+  numOfCartItems: number;
+  data?: {
+    _id: string;
+    cartItems: any[];
+    totalCartPrice: number;
+  };
 }
 
-interface OrderApi {
-  _id?: string;
-  id?: number | string;
-  cartItems?: CartItem[];
-  totalOrderPrice?: number;
-  isPaid?: boolean;
-  paymentMethodType?: string;
-  createdAt?: string;
-  [key: string]: unknown;
-}
+// interface CheckoutValues {
+//   shippingAddress: {
+//     details: string;
+//     phone: string;
+//     city: string;
+//   };
+// }
 
-type ApiWrapper<T> = { data: T };
-
-export type CartContextType = {
-  AddToCart: (id: string) => Promise<AxiosResponse<ApiWrapper<CartApiData>>>;
-  AllCart: () => Promise<AxiosResponse<ApiWrapper<CartApiData>>>;
-  UpDateProduct: (
-    id: string,
-    count: number
-  ) => Promise<AxiosResponse<ApiWrapper<CartApiData>>>;
-  RemoveCart: (id: string) => Promise<AxiosResponse<ApiWrapper<CartApiData>>>;
+type CartContextType = {
+  cartId?: string;
+  numberItem: number;
+  setNumberItem: React.Dispatch<React.SetStateAction<number>>;
+  AllCart: () => Promise<AxiosResponse<any>>;
+  AddToCart: (productId: string) => Promise<AxiosResponse<any>>;
+  removeItem: (productId: string) => Promise<AxiosResponse<any>>;
+  updateItem: (productId: string, count: number) => Promise<AxiosResponse<any>>;
+  clearCart: () => Promise<AxiosResponse<any>>;
   CartCheckout: (
     cartId: string | number,
     url: string,
     formData: Record<string, unknown>
   ) => Promise<AxiosResponse<unknown>>;
-  ClearCart: () => Promise<AxiosResponse<ApiWrapper<null>>>;
-  fetchOrders: () => Promise<AxiosResponse<ApiWrapper<OrderApi[]>>>;
-  numberItem: number;
-  setNumberItem: React.Dispatch<React.SetStateAction<number>>;
-  cartId: string | number | null;
 };
 
-export const CartContext = createContext<CartContextType | null>(null);
+export const CartContext = createContext<CartContextType>(
+  {} as CartContextType
+);
 
 export default function CartContextProvider({
   children,
 }: {
   children: React.ReactNode;
-}): React.ReactElement {
-  const [orders, setOrders] = useState<OrderApi[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [numberItem, setNumberItem] = useState<number>(0);
-  const [cartId, setCartId] = useState<string | number | null>(null);
+}) {
+  const [cartId, setCartId] = useState<string>("");
+  const [numberItem, setNumberItem] = useState<number>(() => {
+    const savedCount = localStorage.getItem("cartCount");
+    return savedCount ? JSON.parse(savedCount) : 0;
+  });
 
-  // ✅ Token Getter
-  const getToken = (): string => localStorage.getItem("token") || "";
+  
+  useEffect(() => {
+    localStorage.setItem("cartCount", JSON.stringify(numberItem));
+  }, [numberItem]);
 
-  // ✅ Get All Cart
-  async function AllCart(): Promise<AxiosResponse<ApiWrapper<CartApiData>>> {
-    const token = getToken();
-    const res = await axios.get<ApiWrapper<CartApiData>>(
+  const getToken = () => localStorage.getItem("token");
+
+  // ✅ AllCart
+  async function AllCart() {
+    return axios.get("https://ecommerce.routemisr.com/api/v1/cart", {
+      headers: { token: getToken() },
+    });
+  }
+
+  // ✅ AddToCart
+  async function AddToCart(productId: string) {
+    const res = await axios.post(
       "https://ecommerce.routemisr.com/api/v1/cart",
-      { headers: { token } }
+      { productId },
+      { headers: { token: getToken() } }
     );
-
-    const payload =
-      (res.data as unknown as { data?: CartApiData }).data ??
-      (res.data as unknown as CartApiData);
-
-    setCartId(payload?._id ?? null);
-    setNumberItem(payload?.numOfCartItems ?? 0);
-
+    setNumberItem(res.data.numOfCartItems);
     return res;
   }
 
-  // ✅ Add Product to Cart
-  async function AddToCart(
-    id: string
-  ): Promise<AxiosResponse<ApiWrapper<CartApiData>>> {
-    const token = getToken();
-    const res = await axios.post<ApiWrapper<CartApiData>>(
-      "https://ecommerce.routemisr.com/api/v1/cart",
-      { productId: id },
-      { headers: { token } }
+  // ✅ removeItem
+  async function removeItem(productId: string) {
+    const res = await axios.delete(
+      `https://ecommerce.routemisr.com/api/v1/cart/${productId}`,
+      { headers: { token: getToken() } }
     );
+    setNumberItem(res.data.numOfCartItems);
     return res;
   }
 
-  // ✅ Remove Product from Cart
-  async function RemoveCart(
-    id: string
-  ): Promise<AxiosResponse<ApiWrapper<CartApiData>>> {
-    const token = getToken();
-    const res = await axios.delete<ApiWrapper<CartApiData>>(
-      `https://ecommerce.routemisr.com/api/v1/cart/${id}`,
-      { headers: { token } }
-    );
-    return res;
-  }
-
-  // ✅ Update Product Quantity
-  async function UpDateProduct(
-    id: string,
-    count: number
-  ): Promise<AxiosResponse<ApiWrapper<CartApiData>>> {
-    const token = getToken();
-    const res = await axios.put<ApiWrapper<CartApiData>>(
-      `https://ecommerce.routemisr.com/api/v1/cart/${id}`,
+  // ✅ updateItem
+  async function updateItem(productId: string, count: number) {
+    const res = await axios.put(
+      `https://ecommerce.routemisr.com/api/v1/cart/${productId}`,
       { count },
-      { headers: { token } }
+      { headers: { token: getToken() } }
     );
+    setNumberItem(res.data.numOfCartItems);
     return res;
   }
 
-  // ✅ Checkout
-  async function CartCheckout(
-    cartIdParam: string | number,
-    url: string,
-    formData: Record<string, unknown>
-  ): Promise<AxiosResponse<unknown>> {
-    const token = getToken();
-    const res = await axios.post<unknown>(
-      `https://ecommerce.routemisr.com/api/v1/orders/checkout-session/${cartIdParam}?url=${encodeURIComponent(
-        url
-      )}`,
-      { shippingAddress: formData },
-      { headers: { token } }
-    );
-    return res;
-  }
-
-  // ✅ Fetch Orders
-  async function fetchOrders(): Promise<AxiosResponse<ApiWrapper<OrderApi[]>>> {
-    const token = getToken();
-    const res = await axios.get<ApiWrapper<OrderApi[]>>(
-      "https://ecommerce.routemisr.com/api/v1/orders/user/",
-      { headers: { token } }
-    );
-
-    const data = (res.data as unknown as { data?: OrderApi[] }).data ?? [];
-    setOrders(data);
-
-    return res;
-  }
-
-  // ✅ Clear Cart
-  async function ClearCart(): Promise<AxiosResponse<ApiWrapper<null>>> {
-    const token = getToken();
-    const res = await axios.delete<ApiWrapper<null>>(
+  // ✅ clearCart
+  async function clearCart() {
+    const res = await axios.delete(
       "https://ecommerce.routemisr.com/api/v1/cart",
-      { headers: { token } }
+      {
+        headers: { token: getToken() },
+      }
     );
     setNumberItem(0);
     return res;
   }
 
-  // ✅ Initial Load
-  useEffect(() => {
-    AllCart()
-      .catch(() => {
-        console.warn("Failed to load cart on mount");
-      })
-      .finally(() => setLoading(false));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // ✅ CartCheckout
+  async function CartCheckout(
+    cartId: string | number,
+    url: string,
+    formData: Record<string, unknown>
+  ) {
+    return axios.post(
+      `https://ecommerce.routemisr.com/api/v1/orders/checkout-session/${cartId}?url=${url}`,
+      formData,
+      { headers: { token: getToken() } }
+    );
+  }
 
-  const value: CartContextType = {
-    AddToCart,
-    AllCart,
-    UpDateProduct,
-    RemoveCart,
-    CartCheckout,
-    ClearCart,
-    fetchOrders,
-    numberItem,
-    setNumberItem,
-    cartId,
-  };
+  // ✅ أول ما المشروع يفتح أو token يتغير
+  useEffect(() => {
+    const token = getToken();
+    if (token) {
+      AllCart()
+        .then((res) => {
+          const num = (res.data as unknown as CartApiData).numOfCartItems ?? 0;
+          setNumberItem(num);
+          setCartId((res.data as any).data._id);
+        })
+        .catch(() => setNumberItem(0));
+    }
+  }, [localStorage.getItem("token")]);
 
   return (
-    <CartContext.Provider value={value}>
-      {!loading && children}
+    <CartContext.Provider
+      value={{
+        cartId,
+        numberItem,
+        setNumberItem,
+        AllCart,
+        AddToCart,
+        removeItem,
+        updateItem,
+        clearCart,
+        CartCheckout,
+      }}
+    >
+      {children}
     </CartContext.Provider>
   );
 }

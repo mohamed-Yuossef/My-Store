@@ -5,6 +5,6 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
   if (localStorage.getItem("token")) {
     return children;
   } else {
-    return <Navigate to={"/login"} />;
+    return <Navigate to={"/signUp"} />;
   }
 }

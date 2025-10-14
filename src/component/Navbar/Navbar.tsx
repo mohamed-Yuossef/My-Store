@@ -7,6 +7,8 @@ import { CartContext } from "../../Context/CartContext";
 import { WishListContext } from "../../Context/WishListContext";
 import { UserContext } from "../../Context/UserContext";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faUser } from "@fortawesome/free-solid-svg-icons";
 interface CartContextType {
   numberItem?: number;
   setNumberItem?: React.Dispatch<React.SetStateAction<number>>;
@@ -22,6 +24,7 @@ interface UserContextType {
 }
 
 export default function Navbar(): React.ReactElement {
+  const [open, setOpen] = useState(false);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [showNavbar, setShowNavbar] = useState<boolean>(true);
   const [lastScrollY, setLastScrollY] = useState<number>(0);
@@ -136,17 +139,44 @@ export default function Navbar(): React.ReactElement {
                 )}
               </Link>
             </div>
-            <div className="relative">
-              <Link to="/login">
-                <User className="w-6 h-6 cursor-pointer hover:text-green-600" />
-                {userLogin && (
-                  <span className="absolute -top-1 -right-0 bg-green-500/95 text-white w-2 h-2 flex items-center justify-center rounded-full" />
-                )}
-              </Link>
-            </div>
           </div>
+          <div className="relative  hidden md:flex ">
+            <button
+              onClick={() => setOpen(!open)}
+              className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-100 hover:bg-gray-200 transition"
+            >
+              <FontAwesomeIcon icon={faUser}></FontAwesomeIcon>
+            </button>
 
-          {/* Animated Hamburger */}
+            {/* Dropdown Menu */}
+            <AnimatePresence>
+              {open && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.2 }}
+                  className="absolute right-0 mt-12 w-40 bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden z-50"
+                >
+                  <Link
+                    to="/signup"
+                    className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                    onClick={() => setOpen(false)}
+                  >
+                    Sign Up
+                  </Link>
+                  <Link
+                    to="/login"
+                    className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                    onClick={() => setOpen(false)}
+                  >
+                    Login
+                  </Link>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        
           <button
             onClick={() => setIsOpen(!isOpen)}
             className="z-50 cursor-pointer relative w-5 h-5 flex flex-col justify-between md:hidden"
@@ -223,14 +253,42 @@ export default function Navbar(): React.ReactElement {
                 </Link>
               </div>
 
-              <div className="relative">
-                <Link to="/login">
-                  <User className="w-6 h-6 cursor-pointer hover:text-green-600" />
-                  {userLogin && (
-                    <span className="absolute -top-1 -right-0 bg-green-500/95 text-white w-2 h-2 flex items-center justify-center rounded-full" />
-                  )}
-                </Link>
-              </div>
+             <div className="relative  ">
+            <button
+              onClick={() => setOpen(!open)}
+              className="flex items-center justify-center mx-2 cursor-pointer rounded-full bg-gray-100 hover:bg-gray-200 transition"
+            >
+              <FontAwesomeIcon icon={faUser}></FontAwesomeIcon>
+            </button>
+
+            {/* Dropdown Menu */}
+            <AnimatePresence>
+              {open && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.2 }}
+                  className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden z-50"
+                >
+                  <Link
+                    to="/signup"
+                    className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                    onClick={() => setOpen(false)}
+                  >
+                    Sign Up
+                  </Link>
+                  <Link
+                    to="/login"
+                    className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                    onClick={() => setOpen(false)}
+                  >
+                    Login
+                  </Link>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
             </div>
           </motion.div>
         )}

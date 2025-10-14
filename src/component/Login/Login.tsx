@@ -45,10 +45,12 @@ export default function Login(): React.ReactElement {
       // handle axios error and generic error
       const message =
         axios.isAxiosError(err) && err.response?.data
-          ? err.response.data.message ?? JSON.stringify(err.response.data)
+          ? (err.response.data ).message ??
+            JSON.stringify(err.response.data)
           : (err as Error).message ?? "An error occurred";
       toast.error(message);
       setApiError(message);
+      
     } finally {
       setLoading(false);
     }

@@ -69,10 +69,7 @@ export default function WishListContextProvider({
   }
 
   useEffect(() => {
-    AllWishListItem().catch(() => {
-      /* ignore initial error */
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    AllWishListItem().catch(() => {});
   }, []);
 
   const value: WishListContextType = {

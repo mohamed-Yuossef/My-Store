@@ -3,13 +3,13 @@ import image2 from "../../assets/grid-image-02.jpg";
 import image3 from "../../assets/grid-image-03.jpg";
 import image4 from "../../assets/grid-image-04.jpg";
 import image1 from "../../assets/grid-image-01.jpg";
+import image5 from "../../assets/blog-11.jpg";
 import { Link, useNavigate } from "react-router-dom";
 import HeroSection from "../HeroSection/HeroSection";
 import MainSlider from "../MainSlider/MainSlider";
 import { motion } from "framer-motion";
 import "swiper/css";
 import "swiper/css/pagination";
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCartArrowDown, faEye, faHeart } from "@fortawesome/free-solid-svg-icons";
 import { CartContext } from "../../Context/CartContext";
@@ -123,11 +123,12 @@ export default function Home(): React.ReactElement {
       </div>
 
       {/* Grid Sections */}
-      <section className="container mx-auto grid grid-cols-1 md:grid-cols-3 gap-3 p-4">
+      <section className="container mx-auto grid grid-cols-1 md:grid-cols-3 gap-3 ">
         {[
           { img: image3, label: "CLEARANCE SALE" },
           { img: image2, label: "JACKET STORE" },
           { img: image4, label: "WOMEN SHOP" },
+          { img: image5, label: "WOMEN SHOP" },
           { img: image1, label: "KIDS STORE", full: true },
         ].map((item, index) => (
           <div
@@ -141,7 +142,7 @@ export default function Home(): React.ReactElement {
               className="w-full h-72 md:h-full object-cover rounded-lg transition-transform duration-500 ease-in-out transform group-hover:scale-105"
             />
             <button className="absolute hover:text-white hover:bg-black group-hover:-translate-y-4 bottom-0 left-1/2 transform -translate-x-1/2 transition duration-500 ease-in-out bg-white bg-opacity-60 text-black px-4 py-2 rounded z-10">
-              <Link to="#">{item.label}</Link>
+              <Link to="/products">{item.label}</Link>
             </button>
           </div>
         ))}
@@ -243,7 +244,7 @@ export default function Home(): React.ReactElement {
                 </div>
 
                 {/* Wishlist + View */}
-                <div className="absolute top-0 right-0 flex flex-col p-6 gap-4 opacity-0 group-hover:opacity-100 transition-all duration-500">
+                <div className="absolute top-0 right-0 flex flex-col p-6 gap-4 transform group-hover:rotate-y-0 rotate-y-180 opacity-0 group-hover:opacity-100 transition-all duration-600">
                   <span
                     onClick={(e) => {
                       e.stopPropagation();

@@ -153,8 +153,8 @@ export default function Cart(): React.ReactElement {
       </div>
 
       {/* Desktop table */}
-      <div className="hidden  md:flex flex-col md:flex-row justify-between items-center gap-6 relative max-w-[95%] mx-auto">
-        <div className=" md:max-w-[90%] lg:max-w-[70%]">
+      <div className="hidden  md:flex flex-col md:flex-row justify-between items-center gap-6 relative ">
+        <div className=" w-full lg:w-8/12">
           <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
             <table className="w-full text-sm text-left rtl:text-right text-gray-500">
               <thead className="text-xs text-gray-700 uppercase bg-gray-50">
