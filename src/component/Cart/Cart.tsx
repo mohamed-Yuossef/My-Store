@@ -24,24 +24,24 @@ interface AllCartItem {
   totalCartPrice?: number;
 }
 
-type CartContextType = {
-  AllCart: () => Promise<unknown>;
-  ClearCart: () => Promise<unknown>;
-  UpDateProduct: (id: string, count: number) => Promise<unknown>;
-  RemoveCart: (id: string) => Promise<unknown>;
-  numberItem?: number;
-  setNumberItem?: React.Dispatch<React.SetStateAction<number>>;
-};
+// type CartContextType = {
+//   AllCart: () => Promise<unknown>;
+//   ClearCart: () => Promise<unknown>;
+//   UpDateProduct: (id: string, count: number) => Promise<unknown>;
+//   RemoveCart: (id: string) => Promise<unknown>;
+//   numberItem?: number;
+//   setNumberItem?: React.Dispatch<React.SetStateAction<number>>;
+// };
 
 export default function Cart(): React.ReactElement {
   const {
     AllCart,
-    UpDateProduct,
-    RemoveCart,
+    updateItem,
+    removeItem,
     numberItem = 0,
     setNumberItem,
-    ClearCart,
-  } = useContext(CartContext) as CartContextType;
+    clearCart,
+  } = useContext(CartContext);
 
   const [allCartItem, setAllCartItem] = useState<AllCartItem | null>(null);
   const [loadingItem, setLoadingItem] = useState<string | null>(null);
@@ -70,7 +70,7 @@ export default function Cart(): React.ReactElement {
     if (count < 1) return;
     setLoadingItem(id);
     try {
-      const response = await UpDateProduct(id, count);
+      const response = await updateItem(id, count);
       const data = response?.data?.data ?? response?.data ?? null;
       setAllCartItem(data);
     } catch (err) {
@@ -83,8 +83,8 @@ export default function Cart(): React.ReactElement {
   async function DeleteCArt(id: string): Promise<void> {
     setLoading(true);
     try {
-      const response = await RemoveCart(id);
-      const data = response?.data?.data ?? response?.data ?? null;
+      const response = await removeItem(id);
+      const data = response?.data?.data;
       setAllCartItem(data);
       if (typeof setNumberItem === "function") {
         setNumberItem(Math.max(0, (numberItem ?? 1) - 1));
@@ -95,9 +95,9 @@ export default function Cart(): React.ReactElement {
       setLoading(false);
     }
   }
-  function ClearUserCart() {
+ async function ClearUserCart() {
     setLoading(true);
-    ClearCart();
+    await clearCart();
     setAllCartItem({ products: [], totalCartPrice: 0 });
     if (typeof setNumberItem === "function") {
       setNumberItem(0);

@@ -218,7 +218,6 @@ export default function Navbar(): React.ReactElement {
                 { label: "Products", path: "products" },
                 { label: "Cart", path: "cart" },
                 { label: "Wishlist", path: "wishlist" },
-                { label: "Contact", path: "contact" },
               ].map(({ label, path }) => (
                 <li key={label}>
                   <Link

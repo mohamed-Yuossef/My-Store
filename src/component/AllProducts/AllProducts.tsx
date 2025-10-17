@@ -250,7 +250,7 @@ export default function AllProducts(): React.ReactElement {
                         </button>
                       </div>
 
-                      <div className="absolute top-0 right-0 flex flex-col p-6 gap-4 transform group-hover:rotate-y-0 rotate-y-180 opacity-0 group-hover:opacity-100 transition-all duration-600">
+                      <div className="absolute top-0 right-0 flex flex-col p-1 md:p-6 gap-2 md:gap-4 transform group-hover:rotate-y-0 rotate-y-180 md:opacity-0 group-hover:opacity-100 transition-all duration-600">
                         <span
                           onClick={(e) => {
                             e.stopPropagation();
@@ -266,7 +266,7 @@ export default function AllProducts(): React.ReactElement {
                             className={`text-2xl transition-all duration-500 cursor-pointer ${
                               wishlistIds.includes(productId)
                                 ? "text-red-500"
-                                : "text-gray-400"
+                                : "text-black"
                             }`}
                           />
                         </span>

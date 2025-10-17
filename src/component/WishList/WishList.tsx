@@ -98,7 +98,7 @@ export default function Wishlist() {
     return (
       <div className="flex flex-col items-center justify-center py-20">
         <Heart className="w-20 h-20 text-gray-400 mb-4" />
-        <p className="text-lg text-gray-600 mb-4">Favorites list is empty 😢</p>
+        <p className="text-lg text-gray-600 mb-4">Favorites list is empty </p>
         <Link
           to="/products"
           className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
