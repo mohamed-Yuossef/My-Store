@@ -46,7 +46,7 @@ type WishListContextType = {
 
 export default function AllProducts(): React.ReactElement {
   const [wishlistIds, setWishlistIds] = useState<string[]>([]);
-  const { AddToCart,  setNumberItem } = useContext(
+  const { AddToCart, setNumberItem } = useContext(
     CartContext
   ) as CartContextType;
   const { AddWishList, AllWishListItem } = useContext(
@@ -73,7 +73,7 @@ export default function AllProducts(): React.ReactElement {
     }
   };
 
-// ...existing code...
+  // ...existing code...
   async function AddCart(id?: string) {
     if (!id) return;
     setAddLoading(id);
@@ -93,7 +93,7 @@ export default function AllProducts(): React.ReactElement {
     } catch (err) {
       const errorAny = err as unknown;
       const message =
-        errorAny?.response?.data?.message ?? 
+        errorAny?.response?.data?.message ??
         errorAny?.message ??
         "Error adding to cart";
       console.error(errorAny);
@@ -123,7 +123,7 @@ export default function AllProducts(): React.ReactElement {
         data?: { status?: string; message?: string };
       };
       if (res?.data?.status === "success") {
-        toast.success(res.data?.message?? "Added to wishlist");
+        toast.success(res.data?.message ?? "Added to wishlist");
         fetchWishlistIds();
       } else {
         toast.error(res?.data?.message ?? "Error adding to wishlist");
@@ -131,10 +131,12 @@ export default function AllProducts(): React.ReactElement {
     } catch (error) {
       const errAny = error as unknown;
       console.error(errAny);
-      toast.error(errAny?.response?.data?.message ?? "Error adding to wishlist");
+      toast.error(
+        errAny?.response?.data?.message ?? "Error adding to wishlist"
+      );
     }
   }
-// ...existing code...
+  // ...existing code...
 
   useEffect(() => {
     productsAll();
