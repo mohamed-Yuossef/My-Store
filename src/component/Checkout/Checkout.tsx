@@ -80,7 +80,7 @@ export default function Checkout(): React.ReactElement {
   }
 
   return (
-    <form onSubmit={formik.handleSubmit} className="max-w-md mx-auto">
+    <form onSubmit={formik.handleSubmit} className="max-w-md mx-auto px-5 py-12">
       {/* Details Input */}
       <div className="relative z-0 w-full mb-5 group">
         <input
